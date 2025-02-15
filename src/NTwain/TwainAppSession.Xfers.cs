@@ -23,6 +23,17 @@ namespace NTwain
             return WrapInSTS(DGImage.ExtImageInfo.Get(ref _appIdentity, ref _currentDS, ref container));
         }
 
+        /// <summary>
+        /// Can only be called in state 6, so it's here and only exposed
+        /// in transfer ready event.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        internal STS SetFileXfer(ref TW_SETUPFILEXFER settings)
+        {
+            return WrapInSTS(DGControl.SetupFileXfer.Set(ref _appIdentity, ref _currentDS, ref settings));
+        }
+
 
         /// <summary>
         /// Start the transfer loop.
@@ -66,7 +77,7 @@ namespace NTwain
             {
                 do
                 {
-                    var readyArgs = new TransferReadyEventArgs(imgXferMech, audXferMech, pending.Count, (TWEJ)pending.EOJ);
+                    var readyArgs = new TransferReadyEventArgs(this, imgXferMech, audXferMech, pending.Count, (TWEJ)pending.EOJ);
                     try
                     {
                         TransferReady?.Invoke(this, readyArgs);

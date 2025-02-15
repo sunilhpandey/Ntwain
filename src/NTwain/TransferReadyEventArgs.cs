@@ -8,11 +8,11 @@ namespace NTwain
     /// </summary>
     public class TransferReadyEventArgs : EventArgs
     {
-        public TransferReadyEventArgs(TWSX imgXferMech, TWSX audXferMech, int pendingCount, TWEJ endOfJobFlag)
+        public TransferReadyEventArgs(TwainAppSession twain, TWSX imgXferMech, TWSX audXferMech, int pendingCount, TWEJ endOfJobFlag)
         {
+            _twain = twain;
             ImgXferMech = imgXferMech;
             AudXferMech = audXferMech;
-            //_twain = twain;
             PendingCount = pendingCount;
             EndOfJobFlag = endOfJobFlag;
         }
@@ -43,9 +43,20 @@ namespace NTwain
         /// </summary>
         public int PendingCount { get; private set; }
 
-        //TW_IMAGEINFO? _imgInfo;
-        //private readonly TwainAppSession _twain;
+        private readonly TwainAppSession _twain;
 
+        /// <summary>
+        /// If the transfer mech is file-related,
+        /// setup the file transfer options here.
+        /// </summary>
+        /// <param name="fileXfer"></param>
+        /// <returns></returns>
+        public STS SetupFileTransfer(ref TW_SETUPFILEXFER fileXfer)
+        {
+            return _twain.SetFileXfer(ref fileXfer);
+        }
+
+        //TW_IMAGEINFO? _imgInfo;
         ///// <summary>
         ///// Gets the tentative image information for the current transfer if applicable.
         ///// This may differ from the final image depending on the transfer mode used (mostly when doing mem xfer).

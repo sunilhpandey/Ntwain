@@ -3,45 +3,45 @@ using NTwain.Triplets;
 using System;
 using System.Runtime.InteropServices;
 
-namespace NTwain
-{
-  // this file contains property and event definitions
+namespace NTwain;
 
-  partial class TwainAppSession
-  {
+// this file contains property and event definitions
+
+partial class TwainAppSession
+{
     /// <summary>
     /// Gets the app identity.
     /// </summary>
     public TW_IDENTITY_LEGACY AppIdentity
     {
-      get => _appIdentity;
+        get => _appIdentity;
     }
-    TW_IDENTITY_LEGACY _appIdentity;
+    internal TW_IDENTITY_LEGACY _appIdentity;
 
     /// <summary>
     /// Gets the current (opened) data source.
     /// </summary>
     public TW_IDENTITY_LEGACY CurrentSource
     {
-      get => _currentDS;
-      protected set
-      {
-        _currentDS = value;
-        try
+        get => _currentDS;
+        protected set
         {
-          CurrentSourceChanged?.Invoke(this, value);
+            _currentDS = value;
+            try
+            {
+                CurrentSourceChanged?.Invoke(this, value);
+            }
+            catch { }
         }
-        catch { }
-      }
     }
-    TW_IDENTITY_LEGACY _currentDS;
+    internal TW_IDENTITY_LEGACY _currentDS;
 
     /// <summary>
     /// Gets/sets the default data source.
     /// </summary>
     public TW_IDENTITY_LEGACY DefaultSource
     {
-      get => _defaultDS;
+        get => _defaultDS;
     }
     TW_IDENTITY_LEGACY _defaultDS;
 
@@ -51,19 +51,19 @@ namespace NTwain
     /// </summary>
     public STATE State
     {
-      get => _state;
-      protected set
-      {
-        if (_state != value)
+        get => _state;
+        protected set
         {
-          _state = value;
-          try
-          {
-            StateChanged?.Invoke(this, value);
-          }
-          catch { }
+            if (_state != value)
+            {
+                _state = value;
+                try
+                {
+                    StateChanged?.Invoke(this, value);
+                }
+                catch { }
+            }
         }
-      }
     }
     STATE _state = STATE.S1;
 
@@ -74,49 +74,49 @@ namespace NTwain
     /// </summary>
     public byte[]? CustomDsData
     {
-      get
-      {
-        var rc = DGControl.CustomDsData.Get(ref _appIdentity, ref _currentDS, out TW_CUSTOMDSDATA data);
-        if (rc == TWRC.SUCCESS)
+        get
         {
-          if (data.hData != IntPtr.Zero && data.InfoLength > 0)
-          {
+            var rc = DGControl.CustomDsData.Get(ref _appIdentity, ref _currentDS, out TW_CUSTOMDSDATA data);
+            if (rc == TWRC.SUCCESS)
+            {
+                if (data.hData != IntPtr.Zero && data.InfoLength > 0)
+                {
+                    try
+                    {
+                        var lockedPtr = Lock(data.hData);
+                        var bytes = new byte[data.InfoLength];
+                        Marshal.Copy(lockedPtr, bytes, 0, bytes.Length);
+                    }
+                    finally
+                    {
+                        Unlock(data.hData);
+                        Free(data.hData);
+                    }
+                }
+                //return Array.Empty<byte>();
+            }
+            return null;
+        }
+        set
+        {
+            if (value == null || value.Length == 0) return;
+
+            TW_CUSTOMDSDATA data = default;
+            data.InfoLength = (uint)value.Length;
+            data.hData = Alloc(data.InfoLength);
             try
             {
-              var lockedPtr = Lock(data.hData);
-              var bytes = new byte[data.InfoLength];
-              Marshal.Copy(lockedPtr, bytes, 0, bytes.Length);
+                var lockedPtr = Lock(data.hData);
+                Marshal.Copy(value, 0, lockedPtr, value.Length);
+                Unlock(data.hData);
+                var rc = DGControl.CustomDsData.Set(ref _appIdentity, ref _currentDS, ref data);
             }
             finally
             {
-              Unlock(data.hData);
-              Free(data.hData);
+                // should be freed already if no error but just in case
+                if (data.hData != IntPtr.Zero) Free(data.hData);
             }
-          }
-          //return Array.Empty<byte>();
         }
-        return null;
-      }
-      set
-      {
-        if (value == null || value.Length == 0) return;
-
-        TW_CUSTOMDSDATA data = default;
-        data.InfoLength = (uint)value.Length;
-        data.hData = Alloc(data.InfoLength);
-        try
-        {
-          var lockedPtr = Lock(data.hData);
-          Marshal.Copy(value, 0, lockedPtr, value.Length);
-          Unlock(data.hData);
-          var rc = DGControl.CustomDsData.Set(ref _appIdentity, ref _currentDS, ref data);
-        }
-        finally
-        {
-          // should be freed already if no error but just in case
-          if (data.hData != IntPtr.Zero) Free(data.hData);
-        }
-      }
     }
 
 
@@ -166,5 +166,4 @@ namespace NTwain
     /// This is NOT raised on the UI thread for reasons.
     /// </summary>
     public event TwainEventDelegate<TransferredEventArgs>? Transferred;
-  }
 }
