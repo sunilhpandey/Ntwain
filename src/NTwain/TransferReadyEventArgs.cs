@@ -56,6 +56,19 @@ namespace NTwain
             return _twain.SetFileXfer(ref fileXfer);
         }
 
+        /// <summary>
+        /// Gets the ext image info at this state for Kodak devices. Use any utility methods on it 
+        /// to read the data. Remember to call <see cref="TW_EXTIMAGEINFO.Free(IMemoryManager)"/>
+        /// when done.
+        /// </summary>
+        /// <param name="container">Container to query. Can be created with <see cref="TW_EXTIMAGEINFO.CreateRequest(TWEI[])"/></param>
+        /// <returns></returns>
+        public STS GetExtendedImageInfo(ref TW_EXTIMAGEINFO container)
+        {
+            if (_twain == null) return default;
+            return _twain.GetExtendedImageInfoSpecial(ref container);
+        }
+
         //TW_IMAGEINFO? _imgInfo;
         ///// <summary>
         ///// Gets the tentative image information for the current transfer if applicable.

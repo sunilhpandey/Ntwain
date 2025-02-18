@@ -2894,7 +2894,11 @@ namespace NTwain.Data
         DEJAVU = 14,
         PDFA = 15,
         PDFA2 = 16,
-        PDFRASTER = 17
+        PDFRASTER = 17,
+
+        // KODAK
+        RAW = 0x8001,
+        RAWBMP = 0x8002
     }
 
     /// <summary>

@@ -22,6 +22,15 @@ namespace NTwain
         {
             return WrapInSTS(DGImage.ExtImageInfo.Get(ref _appIdentity, ref _currentDS, ref container));
         }
+        /// <summary>
+        /// Kodak use.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        internal STS GetExtendedImageInfoSpecial(ref TW_EXTIMAGEINFO container)
+        {
+            return WrapInSTS(DGImage.ExtImageInfo.GetSpecial(ref _appIdentity, ref _currentDS, ref container));
+        }
 
         /// <summary>
         /// Can only be called in state 6, so it's here and only exposed

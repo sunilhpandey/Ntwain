@@ -11,39 +11,40 @@ namespace WinConsole32
             var libVer = FileVersionInfo.GetVersionInfo(typeof(TwainAppSession).Assembly.Location).ProductVersion;
             Console.WriteLine($"Console sample {(TWPlatform.Is32bit ? " 32bit" : " 64bit")} on NTwain {libVer}");
 
-            TwainAppSession session = new TwainAppSession();
+            TwainAppSession twain = new TwainAppSession();
 
-            session.StateChanged += Session_StateChanged;
-            session.SourceDisabled += Session_SourceDisabled1;
-            session.Transferred += Session_Transferred;
+            twain.StateChanged += Session_StateChanged;
+            twain.SourceDisabled += Session_SourceDisabled;
+            twain.TransferReady += Session_TransferReady;
+            twain.Transferred += Session_Transferred;
 
-            var sts = await session.OpenDSMAsync();
+            var sts = await twain.OpenDSMAsync();
 
             if (sts.IsSuccess)
             {
                 Console.WriteLine("Available data sources:");
 
                 TW_IDENTITY_LEGACY firstSrc = default;
-                foreach (var src in session.GetSources())
+                foreach (var src in twain.GetSources())
                 {
                     if (!firstSrc.HasValue) firstSrc = src;
                     Console.WriteLine($"\t{src}");
                 }
                 Console.WriteLine();
 
-                var defaultSrc = session.DefaultSource;
+                var defaultSrc = twain.DefaultSource;
                 Console.WriteLine($"Default data source = {defaultSrc}");
                 Console.WriteLine();
 
-                session.ShowUserSelect();
-                Console.WriteLine($"Selected data source = {session.DefaultSource}");
+                twain.ShowUserSelect();
+                Console.WriteLine($"Selected data source = {twain.DefaultSource}");
                 Console.WriteLine();
 
                 var targetSrc = defaultSrc.HasValue ? defaultSrc : firstSrc;
 
                 if (targetSrc.HasValue)
                 {
-                    TestThisSource(session, targetSrc);
+                    TestThisSource(twain, targetSrc);
                 }
                 else
                 {
@@ -55,7 +56,7 @@ namespace WinConsole32
                 Console.WriteLine("Test in progress, press Enter to stop testing");
                 Console.WriteLine("---------------------------------------------");
                 Console.ReadLine();
-                session.TryStepdown(STATE.S1);
+                twain.TryStepdown(STATE.S1);
             }
             else
             {
@@ -68,14 +69,67 @@ namespace WinConsole32
             Console.ReadLine();
         }
 
+        private static void Session_TransferReady(TwainAppSession twain, TransferReadyEventArgs e)
+        {
+            if (e.ImgXferMech == TWSX.FILE)
+            {
+                var req = TW_EXTIMAGEINFO.CreateRequest(TWEI.CAMERA, TWEI.HDR_PAGENUMBER, TWEI.HDR_COMPRESSION);
+                e.GetExtendedImageInfo(ref req);
+
+                string? camera = null;
+                TWCP comp = TWCP.NONE;
+                int pageNum = 0;
+
+                foreach (var ei in req.AsInfos())
+                {
+                    switch (ei.InfoId)
+                    {
+                        case TWEI.CAMERA:
+                            camera = ei.ReadHandleString(twain);
+                            break;
+                        case TWEI.HDR_PAGENUMBER:
+                            pageNum = ei.ReadNonPointerData<int>();
+                            break;
+                        case TWEI.HDR_COMPRESSION:
+                            comp = ei.ReadNonPointerData<TWCP>();
+                            break;
+                    }
+                }
+
+                string? targetName = null;
+                TWFF format = TWFF.TIFF;
+                switch (comp)
+                {
+                    case TWCP.JPEG:
+                        targetName = $"twain_{DateTime.Now:yyyyMMdd_HHmmss}_{xferCount:D4}.jpg";
+                        format = TWFF.JFIF;
+                        break;
+                    case TWCP.NONE:
+                        targetName = $"twain_{DateTime.Now:yyyyMMdd_HHmmss}_{xferCount:D4}.bmp";
+                        format = TWFF.BMP;
+                        break;
+                    default:
+                        targetName = $"twain_{DateTime.Now:yyyyMMdd_HHmmss}_{xferCount:D4}.tif";
+                        break;
+                }
+
+                TW_SETUPFILEXFER setup = new()
+                {
+                    FileName = targetName,
+                    Format = format,
+                };
+                e.SetupFileTransfer(ref setup);
+            }
+        }
+
         static int xferCount = 0;
         static Stopwatch watch;
-        private static void Session_Transferred(TwainAppSession sender, TransferredEventArgs e)
+        private static void Session_Transferred(TwainAppSession twain, TransferredEventArgs e)
         {
             if (e.Data != null)
             {
                 var saveFile = $"twain_{DateTime.Now:yyyyMMdd_HHmmss}_{xferCount}";
-                Console.WriteLine("SUCCESS! Got twain data #{0} on thread {1}, saving to {saveFile}.", ++xferCount, Environment.CurrentManagedThreadId, saveFile);
+                Console.WriteLine("SUCCESS! Got twain memory data #{0} on thread {1}, saving to {saveFile}.", ++xferCount, Environment.CurrentManagedThreadId, saveFile);
 
                 using (var img = new ImageMagick.MagickImage(e.Data.AsStream()))
                 {
@@ -96,6 +150,11 @@ namespace WinConsole32
                     img.Write(saveFile, format);
                 }
             }
+            else if (e.FileInfo != null)
+            {
+                var fi = e.FileInfo.Value;
+                Console.WriteLine("SUCCESS! Got twain file data #{0} on thread {1} as {saveFile}.", ++xferCount, Environment.CurrentManagedThreadId, fi.FileName);
+            }
             else
             {
                 Console.WriteLine("BUMMER! No twain data #{0} on thread {1}.", ++xferCount, Environment.CurrentManagedThreadId);
@@ -103,34 +162,76 @@ namespace WinConsole32
             e.Dispose();
         }
 
-        private static void Session_StateChanged(TwainAppSession sender, STATE e)
+        private static void Session_StateChanged(TwainAppSession twain, STATE e)
         {
-            Console.WriteLine($"Session state changed to {sender.State}");
+            Console.WriteLine($"Session state changed to {twain.State}");
         }
 
-        private static void Session_SourceDisabled1(TwainAppSession sender, TW_IDENTITY_LEGACY e)
+        private static void Session_SourceDisabled(TwainAppSession twain, TW_IDENTITY_LEGACY e)
         {
             watch.Stop();
             var elapsed = watch.Elapsed;
             Console.WriteLine($"Session source disabled, took {elapsed}.");
-            sender.CloseSource();
+
+            //TestThisSource(twain, e);
         }
 
-        private static void TestThisSource(TwainAppSession session, TW_IDENTITY_LEGACY source)
+        private static void TestThisSource(TwainAppSession twain, TW_IDENTITY_LEGACY source)
         {
             Console.WriteLine($"Testing data source {source}");
             Console.WriteLine();
 
-            session.OpenSource(source);
+            if (twain.State == STATE.S3) twain.OpenSource(source);
 
-            session.Caps.ICAP_PIXELTYPE.Set(TWPT.RGB);
-            session.Caps.ICAP_XRESOLUTION.Set(300f);
-            session.Caps.ICAP_YRESOLUTION.Set(300f);
-            session.Caps.CAP_XFERCOUNT.Set(100);
+            if (source.ProductName.ToString().StartsWith("KODAK Scanner:"))
+            {
+                TryKodakSDMI(twain);
+            }
+            else
+            {
+                twain.Caps.ICAP_XFERMECH.Set(TWSX.NATIVE);
+                twain.Caps.ICAP_PIXELTYPE.Set(TWPT.RGB);
+                twain.Caps.ICAP_XRESOLUTION.Set(300f);
+                twain.Caps.ICAP_YRESOLUTION.Set(300f);
+                twain.Caps.CAP_XFERCOUNT.Set(100);
+
+                xferCount = 0;
+                watch = Stopwatch.StartNew();
+                var rc = twain.EnableSource(true, false);
+            }
+        }
+
+        private static void TryKodakSDMI(TwainAppSession twain)
+        {
+            twain.Caps.ICAP_XFERMECH.Set(TWSX.FILE);
+
+            twain.Caps.ICAP_EXTIMAGEINFO.Set(TW_BOOL.True);
+            //twain.Caps.ICAP_IMAGEFILEFORMAT.Set(TWFF.TIFF);
+
+            var orders = twain.Caps.CAP_CAMERAORDER.GetCurrent().Cast<TWPT>().ToList();
+
+
+            if (twain.ChangeFileSystemDirectory(TWFY.CAMERA, "/Camera_Bitonal_Both").IsSuccess)
+            {
+                twain.Caps.CAP_CAMERAENABLED.Set(TW_BOOL.True);
+                twain.Caps.ICAP_XRESOLUTION.Set(300f);
+                twain.Caps.ICAP_YRESOLUTION.Set(300f);
+                twain.Caps.ICAP_COMPRESSION.Set(TWCP.GROUP4);
+            }
+
+            if (twain.ChangeFileSystemDirectory(TWFY.CAMERA, "/Camera_Color_Both").IsSuccess)
+            {
+                twain.Caps.CAP_CAMERAENABLED.Set(TW_BOOL.True);
+                twain.Caps.ICAP_XRESOLUTION.Set(300f);
+                twain.Caps.ICAP_YRESOLUTION.Set(300f);
+                twain.Caps.ICAP_COMPRESSION.Set(TWCP.JPEG);
+                twain.Caps.ICAP_JPEGQUALITY.Set(TWJQ.HIGH);
+            }
+            twain.Caps.CAP_XFERCOUNT.Set(4);
 
             xferCount = 0;
             watch = Stopwatch.StartNew();
-            var rc = session.EnableSource(true, false);
+            var rc = twain.EnableSource(false, false);
         }
     }
 }
