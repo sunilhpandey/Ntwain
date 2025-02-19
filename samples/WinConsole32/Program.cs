@@ -36,27 +36,30 @@ namespace WinConsole32
                 Console.WriteLine($"Default data source = {defaultSrc}");
                 Console.WriteLine();
 
-                twain.ShowUserSelect();
-                Console.WriteLine($"Selected data source = {twain.DefaultSource}");
-                Console.WriteLine();
-
-                var targetSrc = defaultSrc.HasValue ? defaultSrc : firstSrc;
-
-                if (targetSrc.HasValue)
+                sts = twain.ShowUserSelect();
+                if (sts.IsSuccess)
                 {
-                    TestThisSource(twain, targetSrc);
-                }
-                else
-                {
-                    Console.WriteLine("No data source to test.");
+                    Console.WriteLine($"Selected data source = {twain.DefaultSource}");
                     Console.WriteLine();
-                }
 
-                Console.WriteLine("---------------------------------------------");
-                Console.WriteLine("Test in progress, press Enter to stop testing");
-                Console.WriteLine("---------------------------------------------");
-                Console.ReadLine();
-                twain.TryStepdown(STATE.S1);
+                    var targetSrc = defaultSrc.HasValue ? defaultSrc : firstSrc;
+
+                    if (targetSrc.HasValue)
+                    {
+                        TestThisSource(twain, targetSrc);
+                    }
+                    else
+                    {
+                        Console.WriteLine("No data source to test.");
+                        Console.WriteLine();
+                    }
+
+                    Console.WriteLine("---------------------------------------------");
+                    Console.WriteLine("Test in progress, press Enter to stop testing");
+                    Console.WriteLine("---------------------------------------------");
+                    Console.ReadLine();
+                    twain.TryStepdown(STATE.S1);
+                }
             }
             else
             {
@@ -115,7 +118,7 @@ namespace WinConsole32
 
                 TW_SETUPFILEXFER setup = new()
                 {
-                    FileName = targetName,
+                    FileName = Path.Combine("Images", targetName),
                     Format = format,
                 };
                 e.SetupFileTransfer(ref setup);
@@ -171,9 +174,11 @@ namespace WinConsole32
         {
             watch.Stop();
             var elapsed = watch.Elapsed;
-            Console.WriteLine($"Session source disabled, took {elapsed}.");
+            Console.WriteLine($"Session source disabled, took {elapsed}, will retest in 3 sec...");
 
-            //TestThisSource(twain, e);
+            Thread.Sleep(3000);
+            if (twain.State > STATE.S3)
+                TestThisSource(twain, e);
         }
 
         private static void TestThisSource(TwainAppSession twain, TW_IDENTITY_LEGACY source)

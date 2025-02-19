@@ -2,9 +2,11 @@
 using NTwain.Native;
 using NTwain.Triplets;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace NTwain
 {
@@ -161,7 +163,7 @@ namespace NTwain
                                             break;
                                     }
                                 }
-                                HandleXferCode(ref sts, ref pending);
+                                HandleXferCode(ref sts, ref pending, isEnd: false);
                             }
                         }
                         catch (Exception ex)
@@ -176,7 +178,7 @@ namespace NTwain
                 } while (sts.RC == TWRC.SUCCESS && pending.Count != 0);
             }
 
-            HandleXferCode(ref sts, ref pending);
+            HandleXferCode(ref sts, ref pending, isEnd: true);
 
             if (State >= STATE.S5)
             {
@@ -185,13 +187,17 @@ namespace NTwain
             _inTransfer = false;
         }
 
-        private void HandleXferCode(ref STS sts, ref TW_PENDINGXFERS pending)
+        private void HandleXferCode(ref STS sts, ref TW_PENDINGXFERS pending, bool isEnd)
         {
             switch (sts.RC)
             {
                 case TWRC.SUCCESS:
                 case TWRC.XFERDONE:
                     // ok to keep going
+                    if (isEnd)
+                    {
+                        //DGControl.PendingXfers.EndXfer(ref _appIdentity, ref _currentDS, ref pending);
+                    }
                     break;
                 case TWRC.CANCEL:
                     // might eventually have option to cancel this or all like transfer ready
@@ -210,6 +216,18 @@ namespace NTwain
                     // TODO: raise error event
                     switch (sts.STATUS.ConditionCode)
                     {
+                        case TWCC.SEQERROR:
+                            if (isEnd)
+                            {
+                                // special break down to state 5
+                                pending = TW_PENDINGXFERS.DONTCARE();
+                                sts = WrapInSTS(DGControl.PendingXfers.EndXfer(ref _appIdentity, ref _currentDS, ref pending));
+                                State = STATE.S6;
+                                pending = TW_PENDINGXFERS.DONTCARE();
+                                sts = WrapInSTS(DGControl.PendingXfers.Reset(ref _appIdentity, ref _currentDS, ref pending));
+                                State = STATE.S5;
+                            }
+                            break;
                         case TWCC.DAMAGEDCORNER:
                         case TWCC.DOCTOODARK:
                         case TWCC.DOCTOOLIGHT:
@@ -245,6 +263,7 @@ namespace NTwain
 
             // and just start it
             var sts = WrapInSTS(DGAudio.AudioFileXfer.Get(ref _appIdentity, ref _currentDS));
+
             if (sts.RC == TWRC.XFERDONE)
             {
                 State = STATE.S7;
@@ -475,7 +494,11 @@ namespace NTwain
             // get what will be transferred
             DGControl.SetupFileXfer.Get(ref _appIdentity, ref _currentDS, out TW_SETUPFILEXFER fileSetup);
             // and just start it
+
+            int tries = 0;
+        RETRY:
             var sts = WrapInSTS(DGImage.ImageFileXfer.Get(ref _appIdentity, ref _currentDS));
+
             if (sts.RC == TWRC.XFERDONE)
             {
                 State = STATE.S7;
@@ -492,6 +515,23 @@ namespace NTwain
                 if (sts.RC == TWRC.SUCCESS)
                 {
                     State = pending.Count == 0 ? STATE.S5 : STATE.S6;
+                }
+            }
+            else
+            {
+                // sometimes it errors only due to timing so wait a bit and try again
+                if (sts.RC == TWRC.FAILURE && (sts.ConditionCode == TWCC.None || sts.ConditionCode == TWCC.SEQERROR))
+                {
+                    if (tries++ < 3)
+                    {
+                        Debug.WriteLine($"Using fileXfer timing workaround try {tries}.");
+                        Thread.Sleep(500);
+                        goto RETRY;
+                    }
+                }
+                else
+                {
+                    Debugger.Break();
                 }
             }
             return sts;

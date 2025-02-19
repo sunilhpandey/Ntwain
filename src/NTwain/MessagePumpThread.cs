@@ -9,8 +9,7 @@ using System.Windows.Forms;
 namespace NTwain
 {
   /// <summary>
-  /// For use under Windows to host a message pump in non-winform/wpf apps.
-  /// This is highly experimental.
+  /// For use under Windows to host a message pump.
   /// </summary>
   class MessagePumpThread
   {
