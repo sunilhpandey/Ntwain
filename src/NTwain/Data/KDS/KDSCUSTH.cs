@@ -5,21 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-using TW_HANDLE = System.IntPtr;
-using TW_MEMREF = System.IntPtr;
-using TW_UINTPTR = System.UIntPtr;
-
-using TW_INT8 = System.Byte; // char
-using TW_INT16 = System.Int16;
-using TW_INT32 = System.Int32; // (was long on Linux 64 - bit)
-
-using TW_UINT8 = System.Byte;
-using TW_UINT16 = System.UInt16;
-
-using TW_UINT32 = System.UInt32; //(was ulong on Linux 64 - bit)
-using TW_BOOL = System.UInt16;
-
-
 
 namespace NTwain.Data.KDS;
 
