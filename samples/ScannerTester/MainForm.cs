@@ -1,6 +1,6 @@
 using NTwain;
 using NTwain.Data;
-using NTwain.Data.KDS;
+using NTwain.Data.Kds;
 using NTwain.Triplets;
 using System.ComponentModel;
 using System.Diagnostics;

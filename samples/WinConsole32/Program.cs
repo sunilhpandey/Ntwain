@@ -1,6 +1,6 @@
 ﻿using NTwain;
 using NTwain.Data;
-using NTwain.Data.KDS;
+using NTwain.Data.Kds;
 using System.Diagnostics;
 
 namespace WinConsole32

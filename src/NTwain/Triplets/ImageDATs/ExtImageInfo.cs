@@ -1,5 +1,5 @@
 ﻿using NTwain.Data;
-using NTwain.Data.KDS;
+using NTwain.Data.Kds;
 using NTwain.DSM;
 
 namespace NTwain.Triplets.ImageDATs;

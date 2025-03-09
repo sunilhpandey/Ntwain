@@ -2,7 +2,7 @@
 
 namespace NTwain.Caps
 {
-  partial class KnownCaps
+  partial class BuiltInCaps
   {
 
     CapWriter<TW_BOOL>? _icap_autobright;

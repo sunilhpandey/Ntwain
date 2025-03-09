@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NTwain.Caps
 {
-  partial class KnownCaps
+  partial class BuiltInCaps
   {
 
     CapWriter<TWSX>? _ACAP_XFERMECH;

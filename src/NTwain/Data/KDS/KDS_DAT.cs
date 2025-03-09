@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NTwain.Data.KDS;
+namespace NTwain.Data.Kds;
 
 public enum KDS_DAT : ushort
 {

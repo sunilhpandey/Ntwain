@@ -20,7 +20,7 @@ using TW_UINT16 = System.UInt16;
 using TW_UINT32 = System.UInt32; //(was ulong on Linux 64 - bit)
 using TW_BOOL = System.UInt16;
 
-namespace NTwain.Data.KDS;
+namespace NTwain.Data.Kds;
 
 [StructLayout(LayoutKind.Sequential, Pack = 2)]
 public struct TW_COLORTABLEMAP

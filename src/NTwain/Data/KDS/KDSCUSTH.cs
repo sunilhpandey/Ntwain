@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 
 
-namespace NTwain.Data.KDS;
+namespace NTwain.Data.Kds;
 
 ///// <summary>
 ///// Contains values defined by kdscust.h (kodak).

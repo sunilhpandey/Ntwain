@@ -13,14 +13,24 @@ namespace NTwain
 
     partial class TwainAppSession
     {
-        private KnownCaps? _knownCaps;
+        private BuiltInCaps? _builtinCaps;
 
         /// <summary>
-        /// Access the known and pre-defined caps as properties.
+        /// Access the built-in TWAIN caps as properties.
         /// </summary>
-        public KnownCaps Caps
+        public BuiltInCaps Caps
         {
-            get { return _knownCaps ??= new KnownCaps(this); }
+            get { return _builtinCaps ??= new BuiltInCaps(this); }
+        }
+
+        private KdsCaps? _kdsCaps;
+
+        /// <summary>
+        /// Access the Kodak custom caps as properties.
+        /// </summary>
+        public KdsCaps KdsCaps
+        {
+            get { return _kdsCaps ??= new KdsCaps(this); }
         }
 
         /// <summary>
