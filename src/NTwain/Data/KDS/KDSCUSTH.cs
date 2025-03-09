@@ -2073,120 +2073,35 @@ public enum TWBS : ushort
 }
 
 
-//    // ICAP_BARCODECOUNT
-//    // Type:        TWTY_INT32
-//    // Container:   Range (per side)
-//    // Allowed:     1 to n (Scanner-specific)
-//    // Default:     1
-//    // Notes:       Indicates how many barcodes to detect.
-//    //              This is only available when ICAP_BARCODEDETECTIONENABLED 
-//    //              is set to TRUE.
-//#define ICAP_BARCODECOUNT                  = 0x811E
+/// <summary>
+/// For use with ICAP_BARCODESEARCHAREA.
+/// </summary>
+public enum TWBCSA : ushort
+{
+    ENTIREDOCUMENT    =        0,
+    PARTIALDOCUMENT     =      1
+}
 
+/// <summary>
+/// For use with ICAP_COLORBALANCEMODE.
+/// </summary>
+public enum TWCBM : ushort
+{
+    NONE             =          0,
+    MANUAL            =         1,
+    AUTOMATICBASIC       =      2,
+    AUTOMATIC           =       3
+}
 
-//    // ICAP_BARCODEENHANCEMENT
-//    // Type:        TWTY_BOOL
-//    // Container:   OneValue (per camera)
-//    // Allowed:     TRUE / FALSE
-//    // Default:     FALSE
-//    // Notes:       Allows the user to turn on barcode cleanup (i.e. identify
-//    //              barcodes and maximize their readability). 
-//#define ICAP_BARCODEENHANCEMENT            = 0x811F
-
-
-//    // ICAP_BARCODESEARCHAREA
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per side)
-//    // Allowed:     TWBCSA_ENTIREDOCUMENT, TWBCSA_PARTIALDOCUMENT
-//    // Default:     TWBCSA_ENTIREDOCUMENT
-//    // Notes:       The area on the page to look for barcodes. This setting only has
-//    //              meaning if ICAP_BARCODEDETECTIONENABLED is set to TRUE.
-//#define ICAP_BARCODESEARCHAREA             = 0x8120
-//#define TWBCSA_ENTIREDOCUMENT    =        0
-//#define TWBCSA_PARTIALDOCUMENT     =      1
-
-
-//    // ICAP_BARCODESEARCHREGION
-//    // Type:        TWTY_FRAME
-//    // Container:   Enumeration (per side)
-//    // Allowed:     0,0 - ICAP_PHYSICALWIDTH,ICAP_PHYSICALHEIGHT
-//    // Default:     value of ICAP_SUPPORTEDSIZE
-//    // Notes:       If ICAP_BARCODESEARCHAREA is set to TWBCSA_PARTIALDOCUMENT
-//    //              then this contains the area on the page to search for bar
-//    //              codes (origin, width, height). The minimum size shall be
-//    //              1 inch by 1 inch.
-//    //              This setting only has meaning if ICAP_BARCODEDETECTIONENABLED
-//    //              is set to TRUE, and ICAP_BARCODESEARCHAREA is set to
-//    //              TWBCSA_PARTIALDOCUMENT.
-//#define ICAP_BARCODESEARCHREGION           = 0x8121
-
-
-//    // ICAP_COLORBALANCEAUTOMATICAGGRESSIVENESS
-//    // Type:        TWTY_INT32
-//    // Container:   Range (per color camera)
-//    // Allowed:     -2 to 2
-//    // Default:     0
-//    // Notes:       Indicates how aggressive the automatic white balance will be.
-//    //              This is only available when ICAP_COLORBALANCEMODE set to 
-//    //              TWCBM_AUTOMATICADVANCED
-//#define ICAP_COLORBALANCEAUTOMATICAGGRESSIVENESS  = 0x810A
-
-
-//    // ICAP_COLORBALANCEMODE
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per color camera)
-//    // Allowed:     typically TWCBM_NONE, TWCBM_MANUAL, TWCBM_AUTOMATIC, 
-//    //                      TWCBM_AUTOMATICBASIC 
-//    // Default:     typically TWCBM_AUTOMATICBASIC, if not supported then TWCBM_NONE
-//    // Notes:       Allows the user to select the method for adjusting the color 
-//    //              balance of a color image.
-//    //              TWCBM_NONE means no adjustment is made.
-//    //              TWCBM_MANUAL means the user can adjust Red, Green and Blue  
-//    //              (see ICAP_COLORBALANCEREAD/GREEN/BLUE).
-//    //              TWCBM_AUTOMATICBASIC means the scanner will automatically  
-//    //              adjust the balance to be white.
-//    //              TWCBM_AUTOMATIC is the same as TWCBM_AUTOMATICBASIC but 
-//    //              the user can also adjust the aggressiveness of the balance 
-//    //              (see ICAP_COLORBALANCEAUTOMATICAGRESSIVENESS).
-//#define ICAP_COLORBALANCEMODE              = 0x8109
-//#define TWCBM_NONE             =          0
-//#define TWCBM_MANUAL            =         1
-//#define TWCBM_AUTOMATICBASIC       =      2
-//#define TWCBM_AUTOMATIC           =       3
-
-
-//    // ICAP_COLORBALANCEBLUE
-//    // ICAP_COLORBALANCEGREEN
-//    // ICAP_COLORBALANCERED
-//    // Type:        TWTY_INT32
-//    // Container:   Range (per camera)
-//    // Allowed:     -50 to 50 step 1 for the GUI
-//    //		        -1000 to 1000 step 20 for programmatic
-//    // Default:     0
-//    // Notes:       Allow the user to adjust the color balance. This is ignored 
-//    //              if ICAP_COLORBALANCEMODE is not set to TWCBM_MANUAL.
-//#define ICAP_COLORBALANCEBLUE              = 0x80B1
-//#define ICAP_COLORBALANCEGREEN             = 0x80B2
-//#define ICAP_COLORBALANCERED               = 0x80B3
-
-
-//    // CAP_COLORBRIGHTNESSMODE
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per color camera)
-//    // Allowed:     typically TWCBR_NONE, TWCBR_MANUAL, TWCBR_AUTOMATIC
-//    // Default:     typicaly TWCBR_AUTOMATIC, if not supported then TWCBR_NONE
-//    // Notes:       Allows the user to select the method for adjusting the  
-//    //              brightness and contrast of a color or grayscale image.
-//    //              TWCBR_NONE means no adjustment is made.
-//    //              TWCBR_MANUAL means the user can adjust Brightness and  
-//    //              Contrast (see ICAP_BRIGHTNESS and ICAP_CONTRAST).
-//    //              TWCBR_AUTOMATICBASIC means the scanner will  
-//    //              automatically adjust the image.
-//#define ICAP_COLORBRIGHTNESSMODE           = 0x8108
-//#define TWCBR_NONE                 =      0
-//#define TWCBR_MANUAL               =      1
-//#define TWCBR_AUTOMATICBASIC       =      2
-
+/// <summary>
+/// For use with ICAP_COLORBRIGHTNESSMODE.
+/// </summary>
+public enum TWCBR : ushort
+{
+    NONE                 =      0,
+    MANUAL               =      1,
+    AUTOMATICBASIC       =      2
+}
 
 //    // ICAP_COLORSHARPEN
 //    // Type:        TWTY_UINT32
@@ -3728,20 +3643,6 @@ public enum TWIE : ushort
 //    //
 //#define MSG_ADDWINDOW                      = 0x8011
 //#define MSG_DELETEWINDOW                   = 0x8012
-
-
-//    // OBS_JPEGQUALITY
-//    // Notes:       Same as standard ICAP_JPEGQUALITY, do not use.
-//#define OBS_JPEGQUALITY                    = 0x8040
-
-
-//    //
-//    //  All Stop Feeder...
-//    //  Notes:  This message is added to DG_CONTROL / DAT_PENDINGXFERS
-//    //          to allow the user to turn off the transport.
-//    //          Do not use this message, use MSG_STOPFEEDER...
-//    //
-//#define OBS_STOPFEEDER                     = 0x8001
 
 
 
