@@ -1,5 +1,6 @@
 ﻿using NTwain;
 using NTwain.Data;
+using NTwain.Data.KDS;
 using System.Diagnostics;
 
 namespace WinConsole32
@@ -76,7 +77,7 @@ namespace WinConsole32
         {
             if (e.ImgXferMech == TWSX.FILE)
             {
-                var req = TW_EXTIMAGEINFO.CreateRequest(TWEI.CAMERA, TWEI.HDR_PAGENUMBER, TWEI.HDR_COMPRESSION);
+                var req = TW_EXTIMAGEINFO.CreateRequest(TWEI.CAMERA, (TWEI)KDS_TWEI.HDR_PAGENUMBER, (TWEI)KDS_TWEI.HDR_COMPRESSION);
                 e.GetExtendedImageInfo(ref req);
 
                 string? camera = null;
@@ -90,10 +91,10 @@ namespace WinConsole32
                         case TWEI.CAMERA:
                             camera = ei.ReadHandleString(twain);
                             break;
-                        case TWEI.HDR_PAGENUMBER:
+                        case (TWEI)KDS_TWEI.HDR_PAGENUMBER:
                             pageNum = ei.ReadNonPointerData<int>();
                             break;
-                        case TWEI.HDR_COMPRESSION:
+                        case (TWEI)KDS_TWEI.HDR_COMPRESSION:
                             comp = ei.ReadNonPointerData<TWCP>();
                             break;
                     }
