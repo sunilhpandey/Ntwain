@@ -43,21 +43,14 @@ namespace NTwain.Data.Kds;
 //    //              or not an image contains color content
 //#define ICAP_AUTOCOLORIGNOREBACKGROUND    =  = 0x814A
 
-
-//    // CAP_BACKGROUND
-//    // Type:        TWTY_INT16
-//    // Container:   Enumeration
-//    // Allowed:     TWBK_BLACK, TWBK_WHITE
-//    // Default:     (scanner dependent)
-//    // Notes:       Reports what the scanner background was at the
-//    //              time the scanner was started.  This capability
-//    //              cannot detect a "hot" change.
-//    //              For Blaze and Panther, it allows the user to select the color
-//    //              of the imaging background. This can be set differently per side.
-//#define CAP_BACKGROUND                     = 0x8089
-//#define TWBK_BLACK                   =     0
-//#define TWBK_WHITE                  =      1
-
+/// <summary>
+/// For use with CAP_BACKGROUND.
+/// </summary>
+public enum TWBK : short
+{
+    BLACK = 0,
+    WHITE = 1,
+}
 
 //    // CAP_BACKGROUNDFRONT
 //    // Type:        TWTY_INT16
@@ -161,73 +154,15 @@ namespace NTwain.Data.Kds;
 //#define CAP_BLANKPAGE                  = 0x809A
 //#define TWBP_IMAGE                 =   1
 
-
-//    // CAP_BLANKPAGEMODE
-//    // Type:        TW_UINT16
-//    // Container:   Enumeration
-//    // Allowed:     TWBM_NONE, TWBM_COMPSIZE, TWBM_CONTENT
-//    // Default:     TWBM_NONE
-//    // Notes:       Blank image deletion mode. Not all values are supported on all scanners.
-//#define CAP_BLANKPAGEMODE              = 0x809B
-//#define TWBM_COMPSIZE              =   0
-//#define TWBM_NONE                  =   1
-//#define TWBM_CONTENT                =  2
-
-
-//    // CAP_BLANKPAGECOMPSIZEBW
-//    // Type:        TW_UINT32
-//    // Container:   Range
-//    // Allowed:     0 to 1000KB
-//    // Default:     0
-//    // Notes:       Delete Bitonal image if the final size is less than specific amount.
-//    //              Value needs to be in 1024 increments
-//    //              The front and rear values must be the same on Mustang2 and Pony
-//    //              When set to a non-zero value: CAP_BLANKPAGEMODE is automatically
-//    //              set to TWBM_COMPSIZE
-//    //              If set zero and CAP_BLANKPAGECOMPSIZEBW and CAP_BLANKPAGECOMPSIZEGRAY
-//    //              are zero, then CAP_BLANKPAGEMODE is automatically changed to TWBM_NONE
-//#define CAP_BLANKPAGECOMPSIZEBW         = 0x809C
-
-
-//    // CAP_BLANKPAGECOMPSIZEGRAY
-//    // Type:        TW_UINT32
-//    // Container:   Range
-//    // Allowed:     0 to 1000KB
-//    // Default:     0
-//    // Notes:       Delete Gray image if the final size is less than specific amount.
-//    //              Value needs to be in 1024 increments
-//    //              The front and rear values must be the same on Mustang2 and Pony
-//    //              When set to a non-zero value: CAP_BLANKPAGEMODE is automatically
-//    //              set to TWBM_COMPSIZE
-//    //              If set zero and CAP_BLANKPAGECOMPSIZEBW and CAP_BLANKPAGECOMPSIZEGRAY
-//    //              are zero, then CAP_BLANKPAGEMODE is automatically changed to TWBM_NONE
-//#define CAP_BLANKPAGECOMPSIZEGRAY         = 0x809D
-
-
-//    // CAP_BLANKPAGECOMPSIZERGB
-//    // Type:        TW_UINT32
-//    // Container:   Range
-//    // Allowed:     0 to 1000KB
-//    // Default:     0
-//    // Notes:       Delete Color image if the final size is less than specific amount.
-//    //              Value needs to be in 1024 increments
-//    //              The front and rear values must be the same on Mustang2 and Pony
-//    //              When set to a non-zero value: CAP_BLANKPAGEMODE is automatically
-//    //              set to TWBM_COMPSIZE
-//    //              If set zero and CAP_BLANKPAGECOMPSIZEBW and CAP_BLANKPAGECOMPSIZEGRAY
-//    //              are zero, then CAP_BLANKPAGEMODE is automatically changed to TWBM_NONE
-//#define CAP_BLANKPAGECOMPSIZERGB          = 0x809E
-
-
-//    // CAP_BLANKPAGECONTENT
-//    // Type:        TW_UINT32
-//    // Container:   Range
-//    // Allowed:     0 to 100
-//    // Default:     0
-//    // Notes:       If the percent of content on the image is less than or equal to
-//    //              this amount, the image will be deleted. This is only valid when
-//    //              CAP_BLANKPAGEMODE is set to TWBM_CONTENT
-//#define CAP_BLANKPAGECONTENT		    = 0x80C4
+/// <summary>
+/// For use with CAP_BLANKPAGEMODE.
+/// </summary>
+public enum TWBM : ushort
+{
+    COMPSIZE = 0,
+    NONE = 1,
+    CONTENT = 2
+}
 
 
 //    // CAP_CAMERAENABLE
@@ -2116,39 +2051,26 @@ namespace NTwain.Data.Kds;
 //    //              is required.
 //#define ICAP_AUTOCOLORTHRESHOLD            = 0x8094
 
+/// <summary>
+/// For use with ICAP_BACKGROUNDADJUSTAPPLYTO.
+/// </summary>
+public enum TWBA : ushort
+{
+    ALL = 0,
+    NEUTRAL = 1,
+    PREDOMINATE = 2
+}
 
-//    // ICAP_BACKGROUNDADJUSTAGGRESSIVENESS
-//    // Type:        TWTY_INT32
-//    // Container:   Range (per color camera)
-//    // Allowed:     -10 to 10
-//    // Default:     0
-//    // Notes:       The background color adjustment aggressiveness
-//#define ICAP_BACKGROUNDADJUSTAGGRESSIVENESS   = 0x80B0
-
-
-//    // ICAP_BACKGROUNDADJUSTAPPLYTO
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per color camera)
-//    // Allowed:     TWBA_ALL,TWBA_NEUTRAL,TWBA_PREDOMINATE
-//    // Default:     TWBA_PREDOMINATE
-//    // Notes:       The background color adjustment apply to 
-//#define ICAP_BACKGROUNDADJUSTAPPLYTO       = 0x80AF
-//#define TWBA_ALL               =           0
-//#define TWBA_NEUTRAL            =          1
-//#define TWBA_PREDOMINATE        =          2
-
-
-//    // ICAP_BACKGROUNDADJUSTMODE
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per color camera)
-//    // Allowed:     TWBS_NONE,TWBS_AUTO,TWBS_CHANGETOWHITE, TWBS_AUTOMATICBASIC
-//    // Default:     TWCL_NONE
-//    // Notes:       The background smoothing mode
-//#define ICAP_BACKGROUNDADJUSTMODE          = 0x80AE
-//#define TWBS_NONE               =          0
-//#define TWBS_AUTOMATIC          =          1
-//#define TWBS_CHANGETOWHITE       =         2
-//#define TWBS_AUTOMATICBASIC      =         3
+/// <summary>
+/// For use with ICAP_BACKGROUNDADJUSTMODE.
+/// </summary>
+public enum TWBS : ushort
+{
+    NONE = 0,
+    AUTOMATIC = 1,
+    CHANGETOWHITE = 2,
+    AUTOMATICBASIC = 3
+}
 
 
 //    // ICAP_BARCODECOUNT
@@ -2364,31 +2286,21 @@ namespace NTwain.Data.Kds;
 //#define TWCT_FILE59   =                   59
 //#define TWCT_FILE60   =                   60
 
-//    // ICAP_CROPPINGMODE
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per camera)
-//    // Allowed:     See below...
-//    // Default:     TWCR_AUTOMATICBORDERDETECTION
-//    // Notes:       Selects the mode of cropping.  This capability is
-//    //              tied to ICAP_AUTOMATICBORDERDETECTION, where FALSE
-//    //              equals TWCR_TRANSPORT and TRUE equals
-//    //              TWCR_AUTOMATICBORDERDETECTION.
-//    //              Continuous cropping mode is also known as Long Paper mode.    
-//    //              If the user set one of the camera to TWCR_CONTIUOUS
-//    //              all the camera force to set cropping to TWCR_CONTIUOUS
-//    //              and if all camera in TWCR_CONTIUOUS cropping mode, the 
-//    //              user change one of the camera to other cropping mode
-//    //              then all the camera will force to set the same cropping mode
-//#define ICAP_CROPPINGMODE                  = 0x8022
-//#define TWCR_AUTOMATICBORDERDETECTION =   0
-//#define TWCR_TRANSPORT                =   1
-//#define TWCR_DOCUMENT                 =   2
-//#define TWCR_AGGRESSIVEAUTOCROP       =   3
-//#define TWCR_CONTINUOUS               =   4
-//#define TWCR_MULTIPLEAGGRESSIVE       =   5
-//#define TWCR_PHOTO                    =   6
-//#define TWCR_PHOTOINROI               =   7
 
+/// <summary>
+/// For use with ICAP_CROPPINGMODE.
+/// </summary>
+public enum TWCR : ushort
+{
+    AUTOMATICBORDERDETECTION = 0,
+    TRANSPORT = 1,
+    DOCUMENT = 2,
+    AGGRESSIVEAUTOCROP = 3,
+    CONTINUOUS = 4,
+    MULTIPLEAGGRESSIVE = 5,
+    PHOTO = 6,
+    PHOTOINROI = 7
+}
 
 //    // ICAP_DOCUMENTTYPE
 //    // Type:        TWTY_UINT16
@@ -2682,22 +2594,17 @@ namespace NTwain.Data.Kds;
 //#define ICAP_HOLEFILLENABLED           	   = 0x8104
 
 
-//    // ICAP_IMAGEEDGEFILL
-//    // Type:        TWTY_UINT16
-//    // Container:   Enumeration (per camera)
-//    // Allowed:     (see list below)
-//    // Default:     TWIE_AUTOMATIC if the scanner is supported. 
-//    //              Otherwise TWIE_NONE is the default
-//    // Notes:       Fills in each edge of the image with the selected color. 
-//    //              The TWIE_AUTOMATIC and TWIE_AUTOMATICWITHTEAR are not available
-//    //              for all scanners.
-//#define ICAP_IMAGEEDGEFILL                 = 0x8095
-//#define TWIE_NONE        =              0
-//#define TWIE_WHITE       =              1
-//#define TWIE_BLACK       =              2
-//#define TWIE_AUTOMATIC    =             3
-//#define TWIE_AUTOMATICWITHTEAR=         4
-
+/// <summary>
+/// For use with ICAP_IMAGEEDGEFILL.
+/// </summary>
+public enum TWIE : ushort
+{
+    NONE = 0,
+    WHITE = 1,
+    BLACK = 2,
+    AUTOMATIC = 3,
+    AUTOMATICWITHTEAR = 4
+}
 
 //    // ICAP_IMAGEEDGEFILLALLSIDES
 //    // Type:        TWTY_BOOL
@@ -2709,18 +2616,6 @@ namespace NTwain.Data.Kds;
 //#define ICAP_IMAGEEDGEFILLALLSIDES         = 0x80B9
 //#define ICAP_IMAGEEDGEFILLALLSIZE          = 0x80B9	// Deprecated TWAIN 10.x+	
 
-
-//    // ICAP_IMAGEEDGE*
-//    // Type:        TWTY_FIX32
-//    // Container:   Range (per camera)
-//    // Allowed:     0 to ICAP_PHYSICALWIDTH for left and right
-//    //              0 to ICAP_PHYSICALHEIGHT for the the top and bottom
-//    // Default:     0
-//    // Notes:       Amount of fill for the left/right/top/bottom edge of the image
-//#define ICAP_IMAGEEDGELEFT                 = 0x8096
-//#define ICAP_IMAGEEDGERIGHT                = 0x8097
-//#define ICAP_IMAGEEDGETOP                  = 0x8098
-//#define ICAP_IMAGEEDGEBOTTOM               = 0x8099
 
 
 //    // ICAP_IMAGEFILEFORMAT
@@ -2981,15 +2876,6 @@ namespace NTwain.Data.Kds;
 //    //              meaningless if streak removal ‘enabled’ is FALSE.
 //#define ICAP_STREAKREMOVALAGGRESSIVENESS    = 0x80C7
 
-
-//    // ICAP_STREAKREMOVALENABLED
-//    // Type:        TWTY_BOOL
-//    // Container:   OneValue (per output stream)
-//    // Allowed:     TRUE / FALSE
-//    // Default:     Scanner specific
-//    // Notes:       Streak Removal enabled/disabled. If TRUE, then the
-//    //              streak removal ‘aggressiveness level’ has meaning.
-//#define ICAP_STREAKREMOVALENABLED          = 0x80C6
 
 
 //    // ICAP_TEXTENHANCEMENT
