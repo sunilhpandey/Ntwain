@@ -1,26 +1,18 @@
 ﻿using NTwain.Data;
-using NTwain.Triplets.Audio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using NTwain.Triplets.AudioDATs;
 
 namespace NTwain.Triplets
 {
-    /// <summary>
-    /// Represents <see cref="DataGroups.Audio"/>.
-	/// </summary>
-    partial class DGAudio : BaseTriplet
-    {
-        internal DGAudio(TwainSession session) : base(session) { }
+  /// <summary>
+  /// Contains triplet calls starting with <see cref="DG.AUDIO"/>.
+  /// </summary>
+  public static class DGAudio
+  {
+    public static readonly AudioFileXfer AudioFileXfer = new();
 
-        AudioFileXfer _fileXfer;
-        internal AudioFileXfer AudioFileXfer => _fileXfer ?? (_fileXfer = new AudioFileXfer(Session));
+    public static readonly AudioInfo AudioInfo = new();
 
-        AudioInfo _info;
-        internal AudioInfo AudioInfo => _info ?? (_info = new AudioInfo(Session));
+    public static readonly AudioNativeXfer AudioNativeXfer = new();
 
-        AudioNativeXfer _natXfer;
-        internal AudioNativeXfer AudioNativeXfer => _natXfer ?? (_natXfer = new AudioNativeXfer(Session));
-    }
+  }
 }

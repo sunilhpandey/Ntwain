@@ -1,102 +1,54 @@
 ﻿using NTwain.Data;
-using NTwain.Triplets.Control;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DeviceEvent = NTwain.Triplets.Control.DeviceEvent;
+using NTwain.Triplets.ControlDATs;
 
 namespace NTwain.Triplets
 {
-    /// <summary>
-    /// Represents <see cref="DataGroups.Control"/>.
-	/// </summary>
-    public partial class DGControl : BaseTriplet
-    {
-        internal DGControl(TwainSession session) : base(session) { }
+  /// <summary>
+  /// Contains triplet calls starting with <see cref="DG.CONTROL"/>.
+  /// </summary>
+  public static class DGControl
+  {
+    public static readonly Callback Callback = new();
 
-        Parent _parent;
-        internal Parent Parent => _parent ?? (_parent = new Parent(Session));
+    public static readonly Callback2 Callback2 = new();
 
-        EntryPoint _entryPoint;
-        internal EntryPoint EntryPoint => _entryPoint ?? (_entryPoint = new EntryPoint(Session));
+    public static readonly Capability Capability = new();
 
-        Identity _identity;
-        internal Identity Identity => _identity ?? (_identity = new Identity(Session));
+    public static readonly CapabilityCustom CapabilityCustom = new();
 
-        Callback _callback;
-        internal Callback Callback => _callback ?? (_callback = new Callback(Session));
+    public static readonly CustomDsData CustomDsData = new();
 
-        Callback2 _callback2;
-        internal Callback2 Callback2 => _callback2 ?? (_callback2 = new Callback2(Session));
+    public static readonly DeviceEvent DeviceEvent = new();
 
-        Status _status;
-        internal Status Status => _status ?? (_status = new Status(Session));
+    public static readonly EntryPoint EntryPoint = new();
 
-        StatusUtf8 _statusUtf8;
-        internal StatusUtf8 StatusUtf8 => _statusUtf8 ?? (_statusUtf8 = new StatusUtf8(Session));
+    public static readonly Event Event = new();
 
-        DeviceEvent _devEvent;
-        internal DeviceEvent DeviceEvent => _devEvent ?? (_devEvent = new DeviceEvent(Session));
+    public static readonly FileSystem FileSystem = new();
 
-        UserInterface _ui;
-        internal UserInterface UserInterface => _ui ?? (_ui = new UserInterface(Session));
+    public static readonly Identity Identity = new();
 
-        Event _event;
-        internal Event Event => _event ?? (_event = new Event(Session));
+    public static readonly Metrics Metrics = new();
 
-        PendingXfers _pending;
-        internal PendingXfers PendingXfers => _pending ?? (_pending = new PendingXfers(Session));
+    public static readonly Parent Parent = new();
 
-        CustomDSData _custDSData;
-        internal CustomDSData CustomDSData => _custDSData ?? (_custDSData = new CustomDSData(Session));
+    public static readonly Passthru Passthru = new();
 
-        Capability _caps;
-        /// <summary>
-        /// Gets the operations defined for DAT_CAPABILITY.
-        /// </summary>
-        public Capability Capability => _caps ?? (_caps = new Capability(Session));
+    public static readonly PendingXfers PendingXfers = new();
 
-        PassThru _passThru;
-        /// <summary>
-        /// Gets the operations defined for DAT_PASSTHRU.
-        /// </summary>
-        public PassThru PassThru => _passThru ?? (_passThru = new PassThru(Session));
+    public static readonly SetupFileXfer SetupFileXfer = new();
 
-        SetupMemXfer _memXfer;
-        /// <summary>
-        /// Gets the operations defined for DAT_SETUPMEMXFER.
-        /// </summary>
-        public SetupMemXfer SetupMemXfer => _memXfer ?? (_memXfer = new SetupMemXfer(Session));
+    public static readonly SetupMemXfer SetupMemXfer = new();
 
-        SetupFileXfer _fileXfer;
-        /// <summary>
-        /// Gets the operations defined for DAT_SETUPFILEXFER.
-        /// </summary>
-        public SetupFileXfer SetupFileXfer => _fileXfer ?? (_fileXfer = new SetupFileXfer(Session));
+    public static readonly Status Status = new();
 
-        FileSystem _fs;
-        /// <summary>
-        /// Gets the operations defined for DAT_FILESYSTEM.
-        /// </summary>
-        public FileSystem FileSystem  => _fs ?? (_fs = new FileSystem(Session));
+    public static readonly StatusUtf8 StatusUtf8 = new();
 
-        XferGroup _xferGroup;
-        /// <summary>
-        /// Gets the operations defined for DAT_XFERGROUP.
-        /// </summary>
-        public XferGroup XferGroup => _xferGroup ?? (_xferGroup = new XferGroup(Session));
+    public static readonly TwainDirect TwainDirect = new();
 
-        Metrics _metrics;
-        /// <summary>
-        /// Gets the operations defined for DAT_METRICS.
-        /// </summary>
-        public Metrics Metrics => _metrics ?? (_metrics = new Metrics(Session));
+    public static readonly UserInterface UserInterface = new();
 
-        TwainDirect _twDirect;
-        /// <summary>
-        /// Gets the operations defined for DAT_TWAINDIRECT.
-        /// </summary>
-        public TwainDirect TwainDirect => _twDirect ?? (_twDirect = new TwainDirect(Session));
-    }
+    public static readonly XferGroup XferGroup = new();
+
+  }
 }
